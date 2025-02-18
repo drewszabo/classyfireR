@@ -82,7 +82,7 @@ parse_external_desc <- function(x)
   }
 
   external_desc <-
-    tibble(
+    tibble::tibble(
       source = x$external_descriptors$source,
       source_id = x$external_descriptors$source_id,
       annotations = unlist(external_ann)
