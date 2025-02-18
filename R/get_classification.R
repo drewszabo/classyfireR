@@ -1,6 +1,6 @@
 #' Get Entity Classification
 #'
-#' Retrieve entity classification from `http://classyfire.wishartlab.com/entities/'.
+#' Retrieve entity classification from `https://cfb.fiehnlab.ucdavis.edu/'.
 #' The optional local cache function enables classification requests with less waiting time.
 #' Furthermore, there will be fewer traffic on the classyFire servers. For best high efficiency
 #' there is an option for creating a SQLight database to cache results.
@@ -43,7 +43,7 @@ get_classification <- function(inchi_key, conn=NULL)
     message(crayon::green(clisymbols::symbol$tick, 'cached: ', inchi_key))
     return(object)
   } else {
-    entity_url <- 'http://classyfire.wishartlab.com/entities/'
+    entity_url <- 'https://cfb.fiehnlab.ucdavis.edu/entities/'
 
     entity_query <- paste0(entity_url, inchi_key, '.json')
 
