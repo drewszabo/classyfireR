@@ -1,3 +1,30 @@
+#' Get Entity Classification
+#'
+#' Retrieve entity classification from `https://cfb.fiehnlab.ucdavis.edu/'.
+#' The optional local cache function enables classification requests with less waiting time.
+#' Furthermore, there will be fewer traffic on the classyFire servers. For best high efficiency
+#' there is an option for creating a SQLight database to cache results.
+#'
+#' @param inchi_key a character string of a valid InChIKey
+#' @param conn a DBIConnection object, as produced by dbConnect
+#' @return a `ClassyFire` S4 object.
+#' @seealso ClassyFire-class
+#'
+#' @examples
+#' \dontrun{
+#'
+#' # Valid InChI key where all four classification levels are available
+#' get_classification('BRMWTNUJHUMWMS-LURJTMIESA-N')
+#'
+#' # Valid InChI key where only three classification levels are available
+#' get_classification('MDHYEMXUFSJLGV-UHFFFAOYSA-N')
+#'
+#' # Invalid InChI key
+#' get_classification('MDHYEMXUFSJLGV-UHFFFAOYSA-B')
+#' }
+#' @export
+#' @import RSQLite
+
 get_classification <- function(inchi_key, conn=NULL)
 {
   cache_hits <- 0
@@ -112,4 +139,32 @@ get_classification <- function(inchi_key, conn=NULL)
       return(object)
     }
   }
+}
+
+
+
+#' Open Cache
+#'
+#' Creates a SQLight database for the local caching. This database includes already
+#' queried Inchikeys and the serialized classification object.
+#'
+#' @param dbname The path to the database file. SQLite keeps each database instance
+#' in one single file. The name of the database is the file name, thus database names
+#' should be legal file names in the running platform. There are two exceptions:
+#' "" will create a temporary on-disk database. The file will be deleted when the connection is closed.
+#' ":memory:" or "file::memory:" will create a temporary in-memory database.
+
+#' @return `conn` a DBIConnection object, as produced by dbConnect
+#'
+#' @export
+#' @import RSQLite
+
+open_cache <- function(dbname=":memory:"){
+  conn <- RSQLite::dbConnect(RSQLite::SQLite(), dbname)
+
+  RSQLite::dbExecute(conn,"CREATE TABLE IF NOT EXISTS 'classyfire' (
+          InChikey CHAR(27) PRIMARY KEY,
+          InChi TEXT,
+          Classification TEXT)")
+  return(conn)
 }
